@@ -6,3 +6,4 @@
 * [Ansible命令用法详解](./chapter02/section03.md)
 * [Ansible使用场景](./chapter02/section04.md)
 * [Ansible Inventory配置及详解](./chapter02/section05.md)
+* [Ansible 与正则](./chapter02/section06.md)

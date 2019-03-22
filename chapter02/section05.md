@@ -37,3 +37,70 @@ db-[b:f].abc.com
 
 ### 定义主机变量
 
+在日常工作中，通常会遇到非标准化的需求配置，如考虑到安全性问题，业务人员通常将企业内部的web服务80端口修改为其他端口号，而该功能可以直接通过修改Inventory配置来实现，
+在定义主机时为其添加主机变量，以便在Playbook中使用针对某一主机的个性化要求
+```conf
+[webservers]
+web.abc.com http_port=808 max_RequestsPerChild=801  # 自定义http_port端口为808，配置maxRequestsPerChild为801
+```
+Ansible其实支持多种方式修改或自定义变量，Inventory是其中的一种修改方式。
+
+### 定义组变量
+
+Ansible支持定义组变量，主要针对大量机器的变量定义需求，赋予指定组内所有主机在Playbook中可用的变量，等同于逐一给该组下的所有主机赋予同一变量。定义组变量的参考案例如下：
+```conf
+[groupservers]
+web1.abc.com
+web2.abc.com
+
+[groupservers:vars]
+ntp_server=ntp.abc.com   # 定义groupservers组中所有主机ntp_server值为ntp.abc.com
+```
+
+### 定义组嵌套及组变量
+
+Inventory中，组还可以包含其他的组（嵌套），并且也可以向组中的主机指定变量。不过，这些变量只能在Ansible-playbook中使用，而Ansible不支持。组与组之间可以相互调用，并且可以向组中的主机指定变量。
+```conf
+[apache]
+httpd1.abc.com
+httpd2.abc.com
+
+[nginx]
+nginx1.abc.com
+nginx2.abc.com
+
+[webservers:children]
+apache
+nginx
+
+[webservers:vars]
+ntp_server=ntp.abc.com
+```
+
+### 多重变量定义
+变量除了可以在Inventory中一并定义，也可以独立于Inventory文件之外单独存储到YAM格式的配置文件中，这些文件通常以.yml、.yaml、.json为后缀或无后缀。变量通常从如下4个位检索：
+1. Inventory配置文件
+2. Playbook中的vars定义的区域
+3. Roles中vars目录下的文件
+4. Roles同级目录group_vars和hosts_vars目录下的文件
+
+假如foo主机同属于aaa和bbb组，那么其变量在如下文件中设置均有效
+```conf
+/etc/ansible/groups_vars/aaa
+/etc/ansible/groups_vars/bbb
+/etc/ansible/host_vars/foo
+```
+对于变量的读取，Ansible遵循如上优先级顺序。
+
+### 其他Inventory参数列表
+
+除了支持如下的功能外，Ansible基于SSH连接Inventory中指定的远程主机时，还内置了很多其他参数，用于指定其交互方式，如下列举了部署重要参数:
+```conf
+ansible_ssh_host: 指定连接主机
+ansible_ssh_port: 指定SSH连接端口
+ansible_ssh_user: 指定SSH连接用户
+ansible_ssh_pass:指定SSH连接密码
+ansible_sudo_pass: 指定SSH连接时sudo密码
+ansible_ssh_private_key_file: 指定特定私钥文件
+```
+其他内置参数还有数十个，这些参数均可以直接定在命令行或Playbook文件中，以覆盖配置文件中的定义。
