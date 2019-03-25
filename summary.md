@@ -7,3 +7,7 @@
 * [Ansible使用场景](./chapter02/section04.md)
 * [Ansible Inventory配置及详解](./chapter02/section05.md)
 * [Ansible 与正则](./chapter02/section06.md)
+
+第三章、Ansible Ad-Hoc命令集
+* [Ad-Hoc使用场景](chapter03/section01.md)
+* [Ad-Hoc命令集介绍](chapter03/section02.md)
